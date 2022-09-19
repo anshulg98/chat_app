@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import styled from "styled-components";
 import Logo from "../assets/logo.svg";
 import { deleteRoute } from "../utils/APIRoutes";
+import Logout from "./Logout";
 
 export default function Contacts({ contacts, changeChat }) {
   const [filteredContacts, setFilteredContacts] = useState([]);
@@ -103,6 +104,7 @@ export default function Contacts({ contacts, changeChat }) {
             <div className="username">
               <h2>{currentUserName}</h2>
             </div>
+            <div><Logout/></div>
           </div>
         </Container>
       )}
