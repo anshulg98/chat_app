@@ -49,7 +49,9 @@ export default function Chat() {
   return (
     <>
       <Container>
+        
         <div className="container">
+          {/* <input type="text" name="search" id="search" /> */}
           <Contacts contacts={contacts} changeChat={handleChatChange} />
           {currentChat === undefined ? (
             <Welcome />

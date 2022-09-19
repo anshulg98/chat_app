@@ -1,16 +1,19 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { Component, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import Logo from "../assets/logo.svg";
 import { deleteRoute } from "../utils/APIRoutes";
 
 export default function Contacts({ contacts, changeChat }) {
+  const [filteredContacts, setFilteredContacts] = useState([]);
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentUserImage, setCurrentUserImage] = useState(undefined);
   const [currentSelected, setCurrentSelected] = useState(undefined);
   const [currentRole, setCurrentRole] = useState(false);
 
+  
+  
   useEffect(async () => {
     const data = await JSON.parse(
       localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
@@ -20,6 +23,11 @@ export default function Contacts({ contacts, changeChat }) {
     setCurrentRole(data.admin);
   }, []);
 
+  useEffect(()=>{
+    setFilteredContacts(contacts)
+  },[contacts]
+    )
+  
   const handleDelete=async (id)=>{
     // console.log(id)
     const data=await axios.post(`${deleteRoute}`,{id});
@@ -29,6 +37,18 @@ export default function Contacts({ contacts, changeChat }) {
     }
 
   };
+  const searchItems = (searchValue) => {
+    console.log(searchValue)
+    if (searchValue === '') {
+        setFilteredContacts(contacts)
+    }
+    else{
+        const filteredData = contacts.filter((item) => {
+            return Object.values(item.username).join('').toLowerCase().includes(searchValue.toLowerCase())
+        })
+        setFilteredContacts(filteredData)
+    }
+}
 
   const changeCurrentChat = (index, contact) => {
     setCurrentSelected(index);
@@ -42,8 +62,11 @@ export default function Contacts({ contacts, changeChat }) {
             <img src={Logo} alt="logo" />
             <h3>Telstra Messaging App</h3>
           </div>
+          <div className="input-container">
+            <input type="text" placeholder="Search Here" onChange={(e) => searchItems(e.target.value)}  />
+            </div>
           <div className="contacts">
-            {contacts.map((contact, index) => {
+            {filteredContacts.map((contact, index) => {
               return (
                 <div
                   key={contact._id}
@@ -88,7 +111,7 @@ export default function Contacts({ contacts, changeChat }) {
 }
 const Container = styled.div`
   display: grid;
-  grid-template-rows: 10% 75% 15%;
+  grid-template-rows: 11% 7% 67% 15%;
   overflow: hidden;
   background-color: blue;
   //background-color: #080420;
@@ -215,4 +238,30 @@ const Container = styled.div`
     max-width: 48px;
     object-fit: cover;
   }
+  .input-container {
+    width: 89%;
+    height: 30px;
+    border-radius: 2rem;
+    display: flex;
+    align-items: center;
+    margin-left:13px;
+    gap: 2rem;
+    background-color: white;
+    //background-color: #ffffff34;
+    input {
+      width: 90%;
+      height: 60%;
+      background-color: transparent;
+      color: black;
+      border: none;
+      padding-left: 1rem;
+      font-size: 1.2rem;
+
+      &::selection {
+        background-color: #9a86f3;
+      }
+      &:focus {
+        outline: none;
+      }
+    }
 `;
