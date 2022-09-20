@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { Component, useState, useEffect } from "react";
+import { BiTrash } from "react-icons/bi";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import Logo from "../assets/logo.svg";
@@ -89,7 +90,7 @@ export default function Contacts({ contacts, changeChat }) {
                   <div className="username">
                     <h3>{contact.username}</h3>
                   </div>
-                  {currentRole? <button className="delete" onClick={()=>handleDelete(contact._id)}>delete</button>:<></>}
+                  {currentRole? <button className="delete" onClick={() => { window.confirm( `Are you sure you want to delete the user ${contact.username}?`, ) && handleDelete(contact._id) }}><BiTrash /></button>:<></>}
                 </div>
               );
             })}
@@ -153,8 +154,9 @@ const Container = styled.div`
       width: 90%;
       border-radius: 0.2rem;
       padding: 0.4rem;
-      display: flex;
-      gap: 1rem;
+      display: grid;
+      grid-template-columns:25% 65% 10%;
+      // gap: 1rem;
       align-items: center;
       transition: 0.5s ease-in-out;
       .avatar-img {
@@ -177,14 +179,15 @@ const Container = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    background-color: white;
-    border: none;
+    width:1.5rem;
+    // padding: 0.5rem;
+    // border-radius: 0.5rem;
+    // background-color: white;
+    // border: none;
     cursor: pointer;
     svg {
       font-size: 1.3rem;
-      color: #ebe7ff;
+      color: red;
     }
   }
 
