@@ -39,6 +39,10 @@ export default function Login() {
     return true;
   };
 
+  // const ChangePassword=async ()=>{
+  //   history.pushState('/reset-password')
+  // }
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (validateForm()) {
@@ -87,7 +91,11 @@ export default function Login() {
           />
           <button type="submit">Log In</button>
           <span>
+            <center>
+          <h4 style= { { color: "black" }}>  <Link to="/reset-password">Forget Password ?</Link></h4><br />
+            {/* <span className="forgot" onClick={ChangePassword}>Forgot Password?</span> */}
            <h4 style= { { color: "black" }}> Don't have an account ? <Link to="/register">Create One.</Link></h4>
+           </center>
           </span>
         </form>
       </FormContainer>

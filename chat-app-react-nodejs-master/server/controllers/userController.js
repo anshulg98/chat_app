@@ -1,6 +1,8 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const Token = require("../models/token");
+const Otp=require("../models/otp")
+const nodemailer=require('nodemailer');
 
 const jwt = require("jsonwebtoken");
 const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } = process.env;
@@ -160,4 +162,94 @@ module.exports.deleteUser = async(req,res)=>{
 		console.error(error);
 		return res.status(500).json({error: "Internal Server Error!" });
 	}
+}
+
+module.exports.emailSend = async(req,res)=>{
+	let data=await User.findOne({email:req.body.email});
+	const response = {};
+	if(data)
+	{
+		let otpcode=Math.floor((Math.random()*10000)+1);
+		let otpData=new Otp({
+			email:req.body.email,
+			code:otpcode,
+			expireIn:new Date().getTime() + 300*1000
+		})
+		let otpResponse = await otpData.save();
+		response.statustext='Success'
+		mailer(req.body.email,otpcode)
+		response.message='Please check your email id'
+		//return res.json({ msg: "Please check your email id", status: false });
+	}
+	else
+	{
+		response.statustext='error'
+		response.message='Email id not exist'
+	}
+	res.status(200).json(response)
+};
+
+module.exports.changePassword=async (req,res)=>{
+	let data = await Otp.findOne({email:req.body.email,code:req.body.otpcode});
+	const response={}
+	
+	if(data)
+	{
+		let currentTime= new Date().getTime();
+		let diff = data.expireIn - currentTime;
+		if(diff<0){
+			response.message='Token expired'
+			response.statusText='error'
+			await Otp.findOneAndDelete({email:req.body.email})
+		}
+
+		else if(data.code === req.body.otpcode){
+
+			const {email}=req.body;
+			const user = await User.findOne({email});
+			const newpass = await bcrypt.hash(req.body.password, 10);
+            await User.findByIdAndUpdate(user._id, { $set: { password: newpass } })
+			response.message='Password changed successfully'
+			response.statusText='Success'
+			await Otp.findOneAndDelete({email:email})
+		}
+		else{
+			response.message='Invalid Otp'
+			response.statusText='error'
+		}
+		
+	}
+		else{
+		response.message='Invalid Otp or email'
+			response.statusText='error'
+	}
+	res.status(200).json(response);
+	}
+
+var mailer=(email,otp)=>{
+	var nodemailer=require('nodemailer');
+	var transporter=nodemailer.createTransport({
+		service:'gmail',
+		// port:587,
+		// secure:false,
+		auth:{
+			user:'bootcampteam22@gmail.com',
+			pass:'gvpspqlaikwllclq'
+		}
+	});
+	var mailOptions={
+		from:'bootcampteam22@gmail.com',
+		to:email,
+		subject:'Sending email for password reset',
+		text:'You have requested to change the password. The OTP for resetting the password is '+otp
+	};
+
+	transporter.sendMail(mailOptions, function(error,ingo){
+		if(error){
+			console.log(error);
+		}
+		else{
+			console.log("email sent: "+info.response);
+		}
+	});
 }

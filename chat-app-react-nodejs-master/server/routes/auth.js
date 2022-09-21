@@ -5,6 +5,8 @@ const {
 	setAvatar,
 	logOut,
 	deleteUser,
+	emailSend,
+	changePassword,
 } = require("../controllers/userController");
 const AuthController = require("../controllers/userController");
 const Middleware = require("../middleware/verifyToken");
@@ -17,6 +19,8 @@ router.get("/allusers/:id", getAllUsers);
 router.post("/setavatar/:id", setAvatar);
 router.post("/logout", logOut);
 router.post("/delUser",deleteUser);
+router.post("/email-send",emailSend);
+router.post("/change-password",changePassword);
 router.post("/auth/refresh_token", AuthController.generateRefreshToken);
 router.get("/protected_resource", Middleware.checkAuth, (req, res) => {
 	return res.status(200).json({ user: req.user });
