@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { Component, useState, useEffect } from "react";
+import React, {  useState, useEffect } from "react";
 import { BiTrash } from "react-icons/bi";
 import { toast } from "react-toastify";
 import styled from "styled-components";
